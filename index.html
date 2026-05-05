@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Health Vault</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+        }
+        h1 {
+            color: #38bdf8;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            background: #22c55e;
+            color: white;
+            border-radius: 5px;
+        }
+        table {
+            margin: auto;
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+        }
+        th {
+            background: #1e293b;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🏥 Player Health Wearable Privacy Vault</h1>
+
+<!-- Role Buttons -->
+<button onclick="loadData('doctor')">👨‍⚕️ Doctor View</button>
+<button onclick="loadData('coach')">🧑‍🏫 Coach View</button>
+<button onclick="loadAnalytics()">📊 Analyst View</button>
+
+<table id="dataTable"></table>
+
+<script>
+
+const API_URL = "http://127.0.0.1:5000";
+
+// 👨‍⚕️ Doctor & Coach
+async function loadData(role) {
+    const res = await fetch(API_URL + "/get_data", {
+        headers: { "role": role }
+    });
+
+    const data = await res.json();
+    displayTable(data);
+}
+
+// 📊 Analyst
+async function loadAnalytics() {
+    const res = await fetch(API_URL + "/analytics");
+    const data = await res.json();
+    displayTable(data);
+}
+
+// 📋 Display Table
+function displayTable(data) {
+    const table = document.getElementById("dataTable");
+    table.innerHTML = "";
+
+    if (data.length === 0) return;
+
+    // headers
+    const headers = Object.keys(data[0]);
+    let headerRow = "<tr>";
+    headers.forEach(h => headerRow += `<th>${h}</th>`);
+    headerRow += "</tr>";
+    table.innerHTML += headerRow;
+
+    // rows
+    data.forEach(row => {
+        let rowHTML = "<tr>";
+        headers.forEach(h => {
+            rowHTML += `<td>${row[h]}</td>`;
+        });
+        rowHTML += "</tr>";
+        table.innerHTML += rowHTML;
+    });
+}
+
+</script>
+
+</body>
+</html>
